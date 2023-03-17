@@ -1,22 +1,22 @@
 package rob.digital.springboot6_beerservice_withapis.services;
 
-import rob.digital.springboot6_beerservice_withapis.models.Beer;
+import rob.digital.springboot6_beerservice_withapis.models.BeerDTO;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
 public interface BeerService {
 
-    List<Beer> listBeers();
+    List<BeerDTO> listBeers(String beerName);
 
-    Beer getBeerById(UUID id);
+    Optional<BeerDTO> getBeerById(UUID id);
+    BeerDTO saveNewBeer(BeerDTO beer);
 
-    Beer saveNewBeer(Beer beer);
+    Optional<BeerDTO> updateBeerById(UUID beerId, BeerDTO beer);
 
-    void updateBeerById(UUID beerId, Beer beer);
+    Boolean deleteById(UUID beerId);
 
-    void deleteById(UUID beerId);
-
-    void patchBeerById(UUID beerId, Beer beer);
+    Optional<BeerDTO> patchBeerById(UUID beerId, BeerDTO beer);
 }

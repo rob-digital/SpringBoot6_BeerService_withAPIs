@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import rob.digital.springboot6_beerservice_withapis.models.Customer;
+import rob.digital.springboot6_beerservice_withapis.models.CustomerDTO;
 import rob.digital.springboot6_beerservice_withapis.services.CustomerService;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -23,21 +23,21 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @RequestMapping(method = RequestMethod.GET)
-    Set<Customer> allCustomers() {
+    List<CustomerDTO> allCustomers() {
         return customerService.listCustomers();
     }
 
     @RequestMapping(value = "/{customerId}", method = RequestMethod.GET)
-    public Customer getCustomerById(@PathVariable("customerId") UUID id) {
+    public CustomerDTO getCustomerById(@PathVariable("customerId") UUID id) {
         log.debug("###### --- Get customer by ID controller --- ######333");
 
-        return customerService.getCustomerById(id);
+        return customerService.getCustomerById(id).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping
-    public ResponseEntity postCustomer(@RequestBody Customer customer) {
+    public ResponseEntity postCustomer(@RequestBody CustomerDTO customer) {
 
-        Customer savedCustomer = customerService.saveNewCustomer(customer);
+        CustomerDTO savedCustomer = customerService.saveNewCustomer(customer);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/customer/" + savedCustomer.getId().toString());
@@ -47,9 +47,11 @@ public class CustomerController {
 
     @PutMapping("{customerId}")
     public ResponseEntity updateCustomerByID(@PathVariable("customerId") UUID customerId,
-                                             @RequestBody Customer customer){
+                                             @RequestBody CustomerDTO customer){
 
-        customerService.updateCustomerById(customerId, customer);
+        if (customerService.updateCustomerById(customerId, customer).isEmpty()) {
+            throw new NotFoundException();
+        }
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -57,7 +59,9 @@ public class CustomerController {
     @DeleteMapping("{customerId}")
     public ResponseEntity deleteCustomerById(@PathVariable("customerId") UUID customerId){
 
-        customerService.deleteCustomerById(customerId);
+        if(!customerService.deleteCustomerById(customerId)) {
+            throw new NotFoundException();
+        }
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

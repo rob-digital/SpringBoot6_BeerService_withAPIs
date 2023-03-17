@@ -1,18 +1,19 @@
 package rob.digital.springboot6_beerservice_withapis.services;
 
-import rob.digital.springboot6_beerservice_withapis.models.Customer;
+import rob.digital.springboot6_beerservice_withapis.models.CustomerDTO;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CustomerService {
 
-    Set<Customer> listCustomers();
-    Customer getCustomerById(UUID id);
+    List<CustomerDTO> listCustomers();
+    Optional<CustomerDTO> getCustomerById(UUID uuid);
 
-    Customer saveNewCustomer(Customer customer);
+    CustomerDTO saveNewCustomer(CustomerDTO customer);
 
-    void updateCustomerById(UUID customerId, Customer customer);
+    Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO customer);
 
-    void deleteCustomerById(UUID customerId);
+    Boolean deleteCustomerById(UUID customerId);
 }
